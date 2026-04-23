@@ -31,6 +31,9 @@ import {
   Calendar,
   LifeBuoy,
   Package,
+  Car,
+  Star,
+  FileText,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -94,7 +97,13 @@ const driverSection: NavSection = {
   label: 'Driver',
   items: [
     { name: 'Driver Dashboard', href: '/driver', icon: Navigation },
+    { name: 'Deliveries', href: '/driver/deliveries', icon: Truck, badge: 3, badgeVariant: 'urgent' },
+    { name: 'Schedule', href: '/driver/schedule', icon: Calendar },
     { name: 'Earnings', href: '/driver/earnings', icon: DollarSign },
+    { name: 'Incentives', href: '/driver/incentives', icon: Award },
+    { name: 'Vehicle', href: '/driver/vehicle', icon: Car },
+    { name: 'Ratings', href: '/driver/ratings', icon: Star },
+    { name: 'Documents', href: '/driver/documents', icon: FileText },
   ],
 };
 

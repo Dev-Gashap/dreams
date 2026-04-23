@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Clock, Package, Star, ChevronRight } from 'lucide-react';
-import { cn, formatCurrency } from '@/lib/utils';
+import { Clock, Star, ChevronRight } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
+import { ProductImage } from '@/components/ui/product-image';
 import type { Product } from '@/types';
 
 const STORAGE_KEY = 'dreams_recently_viewed';
@@ -59,9 +60,13 @@ export function RecentlyViewedSection() {
             href={`/marketplace/${product.slug}`}
             className="flex-shrink-0 w-40 bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md hover:border-gray-300 transition-all"
           >
-            <div className="h-28 bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center">
-              <Package className="h-10 w-10 text-gray-300" />
-            </div>
+            <ProductImage
+              productId={product.id}
+              category={product.category}
+              name={product.name}
+              size="md"
+              className="h-28 rounded-none"
+            />
             <div className="p-3">
               <p className="text-xs text-gray-500">{product.brand}</p>
               <p className="text-xs font-semibold text-gray-900 line-clamp-2 mt-0.5 leading-snug">{product.name}</p>

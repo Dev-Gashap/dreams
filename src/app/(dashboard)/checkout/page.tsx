@@ -23,6 +23,7 @@ import {
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ProductImage } from '@/components/ui/product-image';
 import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { cn, formatCurrency, formatETA } from '@/lib/utils';
@@ -399,9 +400,13 @@ export default function CheckoutPage() {
                     const unitPrice = rentalPrice ? rentalPrice.price : item.product.price;
                     return (
                       <div key={item.product.id} className="flex items-center gap-4 p-3 rounded-xl bg-gray-50">
-                        <div className="h-14 w-14 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0">
-                          <Package className="h-6 w-6 text-gray-400" />
-                        </div>
+                        <ProductImage
+                          productId={item.product.id}
+                          category={item.product.category}
+                          name={item.product.name}
+                          size="md"
+                          className="h-14 w-14 rounded-lg flex-shrink-0"
+                        />
                         <div className="flex-1">
                           <p className="text-sm font-semibold text-gray-900">{item.product.name}</p>
                           <div className="flex items-center gap-2 mt-0.5">

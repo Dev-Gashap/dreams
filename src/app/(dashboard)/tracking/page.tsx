@@ -11,14 +11,13 @@ import {
   Package,
   Navigation,
   Star,
-  ChevronRight,
-  Zap,
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/ui/avatar';
-import { cn, formatCurrency, formatStatus, formatDateTime } from '@/lib/utils';
+import { LiveMap } from '@/components/maps/live-map';
+import { cn, formatCurrency } from '@/lib/utils';
 import { mockDispatches, mockOrders } from '@/lib/mock-data';
 
 export default function TrackingPage() {
@@ -71,67 +70,36 @@ export default function TrackingPage() {
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Map Area */}
-        <div className="lg:col-span-2">
-          <Card padding="none" className="overflow-hidden">
-            {/* Simulated Map */}
-            <div className="relative h-[500px] bg-gradient-to-br from-blue-50 via-blue-100 to-blue-50 overflow-hidden">
-              {/* Road lines */}
-              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 500">
-                <path d="M 100 400 Q 200 350 300 300 Q 400 250 500 200 Q 600 150 700 100" stroke="#94a3b8" strokeWidth="3" fill="none" strokeDasharray="8 4" />
-                <path d="M 100 400 Q 200 350 300 300 Q 400 250 500 200 Q 600 150 700 100" stroke="#f97316" strokeWidth="3" fill="none" strokeDasharray={`${progress * 800} 800`} />
-                <path d="M 50 450 L 750 50" stroke="#cbd5e1" strokeWidth="1" fill="none" opacity="0.3" />
-                <path d="M 150 50 L 650 450" stroke="#cbd5e1" strokeWidth="1" fill="none" opacity="0.3" />
-              </svg>
-
-              {/* Pickup point */}
-              <div className="absolute bottom-20 left-16">
-                <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center shadow-lg shadow-blue-500/30 ring-4 ring-white">
-                  <Package className="h-5 w-5 text-white" />
-                </div>
-                <div className="mt-2 bg-white rounded-lg px-3 py-1.5 shadow-md text-xs font-medium text-gray-900 whitespace-nowrap">
-                  Pickup: {dispatch.pickup_address.street.substring(0, 20)}
-                </div>
-              </div>
-
-              {/* Driver position (animated) */}
-              <div className="absolute" style={{ top: `${30 + (1 - progress) * 50}%`, left: `${20 + progress * 55}%` }}>
-                <div className="relative">
-                  <div className="h-14 w-14 rounded-full bg-orange-500 flex items-center justify-center shadow-xl shadow-orange-500/40 ring-4 ring-white animate-pulse">
-                    <Truck className="h-7 w-7 text-white" />
+        <div className="lg:col-span-2 space-y-4">
+          <Card padding="none" className="overflow-hidden relative">
+            <LiveMap
+              driverLocation={{
+                lat: 29.7604 + (29.762 - 29.7604) * progress,
+                lng: -95.3698 + (-95.367 - -95.3698) * progress,
+                timestamp: Date.now(),
+              }}
+              pickupLocation={{ lat: dispatch.pickup_address.lat || 29.7604, lng: dispatch.pickup_address.lng || -95.3698 }}
+              deliveryLocation={{ lat: dispatch.delivery_address.lat || 29.762, lng: dispatch.delivery_address.lng || -95.367 }}
+              pickupLabel={dispatch.pickup_address.street.substring(0, 20)}
+              deliveryLabel={dispatch.delivery_address.street.substring(0, 20)}
+              driverLabel={dispatch.driver_name || 'Driver'}
+              height="500px"
+            />
+            {/* ETA Banner */}
+            <div className="absolute bottom-4 left-4 right-4 z-10">
+              <div className="bg-white/95 backdrop-blur-md rounded-xl p-4 shadow-2xl flex items-center justify-between ring-1 ring-gray-200/50">
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-lg shadow-orange-500/30">
+                    <Clock className="h-6 w-6 text-white" />
                   </div>
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white rounded-lg px-3 py-1.5 text-sm font-bold whitespace-nowrap shadow-lg">
-                    {eta} min away
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Estimated Arrival</p>
+                    <p className="text-2xl font-extrabold text-gray-900 leading-tight">{eta} minutes</p>
                   </div>
                 </div>
-              </div>
-
-              {/* Delivery point */}
-              <div className="absolute top-12 right-16">
-                <div className="h-10 w-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/30 ring-4 ring-white">
-                  <MapPin className="h-5 w-5 text-white" />
-                </div>
-                <div className="mt-2 bg-white rounded-lg px-3 py-1.5 shadow-md text-xs font-medium text-gray-900 whitespace-nowrap">
-                  Delivery: {dispatch.delivery_address.street.substring(0, 20)}
-                </div>
-              </div>
-
-              {/* ETA Banner */}
-              <div className="absolute bottom-4 left-4 right-4">
-                <div className="bg-white/95 backdrop-blur-sm rounded-xl p-4 shadow-lg flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
-                      <Clock className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Estimated Arrival</p>
-                      <p className="text-2xl font-bold text-gray-900">{eta} minutes</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-500">Distance</p>
-                    <p className="text-lg font-bold text-gray-900">{(dispatch.distance_miles! * (1 - progress)).toFixed(1)} mi</p>
-                  </div>
+                <div className="text-right">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Distance</p>
+                  <p className="text-lg font-bold text-gray-900">{(dispatch.distance_miles! * (1 - progress)).toFixed(1)} mi</p>
                 </div>
               </div>
             </div>

@@ -21,41 +21,103 @@ import {
   Heart,
   Bell,
   Navigation,
+  MessageSquare,
+  RotateCcw,
+  DollarSign,
+  CreditCard,
+  Award,
+  Gift,
+  Code,
+  Calendar,
+  LifeBuoy,
+  Package,
+  type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore, useUIStore } from '@/store';
 import { Badge } from '@/components/ui/badge';
 
-const navigation = [
+type NavItem = {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+  badge?: number;
+  badgeVariant?: 'default' | 'urgent' | 'success' | 'warning';
+};
+
+type NavSection = {
+  label?: string;
+  items: NavItem[];
+};
+
+const mainNav: NavItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Marketplace', href: '/marketplace', icon: ShoppingBag },
   { name: 'Orders', href: '/orders', icon: ClipboardList, badge: 3 },
-  { name: 'Dispatch', href: '/dispatch', icon: Truck },
-  { name: 'Live Tracking', href: '/tracking', icon: MapPin, badge: 1, badgeVariant: 'urgent' as const },
+  { name: 'Live Tracking', href: '/tracking', icon: MapPin, badge: 1, badgeVariant: 'urgent' },
   { name: 'Rentals', href: '/rentals', icon: Key },
-  { name: 'Messages', href: '/messages', icon: Bell, badge: 2 },
-  { name: 'Favorites', href: '/favorites', icon: Heart },
-  { name: 'Notifications', href: '/notifications', icon: Bell },
 ];
 
-const businessNavigation = [
-  { name: 'Team', href: '/team', icon: Users },
-  { name: 'Approvals', href: '/approvals', icon: CheckSquare, badge: 2 },
-  { name: 'Analytics', href: '/dashboard?tab=analytics', icon: BarChart3 },
-];
+const commerceSection: NavSection = {
+  label: 'Commerce',
+  items: [
+    { name: 'Reorder', href: '/orders/reorder', icon: RotateCcw },
+    { name: 'Scheduled', href: '/orders/scheduled', icon: Calendar },
+    { name: 'Returns', href: '/returns', icon: RotateCcw },
+    { name: 'Favorites', href: '/favorites', icon: Heart },
+    { name: 'Addresses', href: '/addresses', icon: MapPin },
+  ],
+};
 
-const driverNavigation = [
-  { name: 'Driver Dashboard', href: '/driver', icon: Navigation },
-];
+const communicationSection: NavSection = {
+  label: 'Communication',
+  items: [
+    { name: 'Messages', href: '/messages', icon: MessageSquare, badge: 2 },
+    { name: 'Notifications', href: '/notifications', icon: Bell },
+    { name: 'Support', href: '/support', icon: LifeBuoy },
+  ],
+};
 
-const vendorNavigation = [
-  { name: 'Vendor Portal', href: '/vendor', icon: Store },
-  { name: 'Inventory', href: '/vendor?tab=inventory', icon: ShoppingBag },
-];
+const businessSection: NavSection = {
+  label: 'Business',
+  items: [
+    { name: 'Team', href: '/team', icon: Users },
+    { name: 'Approvals', href: '/approvals', icon: CheckSquare, badge: 2, badgeVariant: 'warning' },
+    { name: 'Dispatch', href: '/dispatch', icon: Truck },
+    { name: 'Reports', href: '/reports', icon: BarChart3 },
+    { name: 'Billing', href: '/billing', icon: CreditCard },
+    { name: 'API Keys', href: '/api-keys', icon: Code },
+  ],
+};
 
-const bottomNavigation = [
+const driverSection: NavSection = {
+  label: 'Driver',
+  items: [
+    { name: 'Driver Dashboard', href: '/driver', icon: Navigation },
+    { name: 'Earnings', href: '/driver/earnings', icon: DollarSign },
+  ],
+};
+
+const vendorSection: NavSection = {
+  label: 'Vendor',
+  items: [
+    { name: 'Vendor Portal', href: '/vendor', icon: Store },
+    { name: 'Inventory', href: '/vendor/inventory', icon: Package },
+    { name: 'Payouts', href: '/vendor/payouts', icon: DollarSign },
+  ],
+};
+
+const rewardsSection: NavSection = {
+  label: 'Rewards',
+  items: [
+    { name: 'Rewards', href: '/rewards', icon: Award },
+    { name: 'Referrals', href: '/referrals', icon: Gift },
+  ],
+};
+
+const bottomNav: NavItem[] = [
   { name: 'Settings', href: '/settings', icon: Settings },
-  { name: 'Help & Support', href: '/help', icon: HelpCircle },
+  { name: 'Help', href: '/help', icon: HelpCircle },
 ];
 
 export function Sidebar() {
@@ -64,16 +126,59 @@ export function Sidebar() {
   const { sidebarOpen, sidebarCollapsed, setSidebarOpen, toggleSidebarCollapse } = useUIStore();
 
   const isActive = (href: string) => {
-    if (href.includes('?')) return pathname === href.split('?')[0];
-    return pathname === href;
+    if (href === '/dashboard') return pathname === href;
+    return pathname === href || pathname.startsWith(href + '/');
   };
+
+  const renderNavItem = (item: NavItem) => (
+    <Link
+      key={item.name}
+      href={item.href}
+      onClick={() => setSidebarOpen(false)}
+      className={cn(
+        'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 group',
+        isActive(item.href)
+          ? 'bg-orange-50 text-orange-700 shadow-sm'
+          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+      )}
+      title={sidebarCollapsed ? item.name : undefined}
+    >
+      <item.icon className={cn('h-[18px] w-[18px] flex-shrink-0', isActive(item.href) && 'text-orange-600')} />
+      {!sidebarCollapsed && (
+        <>
+          <span className="flex-1 truncate">{item.name}</span>
+          {item.badge !== undefined && (
+            <Badge
+              variant={item.badgeVariant || 'default'}
+              size="sm"
+              dot={item.badgeVariant === 'urgent'}
+              pulse={item.badgeVariant === 'urgent'}
+            >
+              {item.badge}
+            </Badge>
+          )}
+        </>
+      )}
+    </Link>
+  );
+
+  const renderSection = (section: NavSection) => (
+    <div className="mt-5" key={section.label}>
+      {!sidebarCollapsed && section.label && (
+        <p className="px-3 text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+          {section.label}
+        </p>
+      )}
+      <div className="space-y-0.5">{section.items.map(renderNavItem)}</div>
+    </div>
+  );
 
   const navContent = (
     <div className="flex flex-col h-full">
       {/* Logo area for mobile */}
       <div className="lg:hidden flex items-center justify-between px-4 py-4 border-b border-gray-100">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-sm">
             <Zap className="h-4 w-4 text-white" />
           </div>
           <span className="text-lg font-bold text-gray-900">Dreams</span>
@@ -84,138 +189,39 @@ export function Sidebar() {
       </div>
 
       {/* Collapse toggle on desktop */}
-      <div className="hidden lg:flex items-center justify-end px-3 pt-4 pb-2">
-        <button onClick={toggleSidebarCollapse} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 transition-colors">
+      <div className="hidden lg:flex items-center justify-end px-3 pt-3 pb-1">
+        <button
+          onClick={toggleSidebarCollapse}
+          className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
           <ChevronLeft className={cn('h-4 w-4 transition-transform', sidebarCollapsed && 'rotate-180')} />
         </button>
       </div>
 
       {/* Main nav */}
-      <div className="flex-1 overflow-auto px-3 py-2">
-        <div className="space-y-1">
-          {navigation.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={() => setSidebarOpen(false)}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
-                isActive(item.href)
-                  ? 'bg-orange-50 text-orange-700'
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-              )}
-            >
-              <item.icon className={cn('h-5 w-5 flex-shrink-0', isActive(item.href) && 'text-orange-600')} />
-              {!sidebarCollapsed && (
-                <>
-                  <span className="flex-1">{item.name}</span>
-                  {item.badge && (
-                    <Badge variant={item.badgeVariant || 'default'} size="sm" dot={item.badgeVariant === 'urgent'} pulse={item.badgeVariant === 'urgent'}>
-                      {item.badge}
-                    </Badge>
-                  )}
-                </>
-              )}
-            </Link>
-          ))}
-        </div>
+      <div className="flex-1 overflow-y-auto px-3 py-1">
+        <div className="space-y-0.5">{mainNav.map(renderNavItem)}</div>
 
-        {/* Business Mode Nav */}
-        {(accountMode === 'business') && (
-          <div className="mt-6">
-            {!sidebarCollapsed && (
-              <p className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Business</p>
-            )}
-            <div className="space-y-1">
-              {businessNavigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
-                    isActive(item.href)
-                      ? 'bg-orange-50 text-orange-700'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                  )}
-                >
-                  <item.icon className={cn('h-5 w-5 flex-shrink-0', isActive(item.href) && 'text-orange-600')} />
-                  {!sidebarCollapsed && (
-                    <>
-                      <span className="flex-1">{item.name}</span>
-                      {item.badge && <Badge size="sm">{item.badge}</Badge>}
-                    </>
-                  )}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+        {renderSection(commerceSection)}
+        {renderSection(communicationSection)}
 
-        {/* Vendor Mode Nav */}
-        {accountMode === 'vendor' && (
-          <div className="mt-6">
-            {!sidebarCollapsed && (
-              <p className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Vendor</p>
-            )}
-            <div className="space-y-1">
-              {vendorNavigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
-                    isActive(item.href)
-                      ? 'bg-orange-50 text-orange-700'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                  )}
-                >
-                  <item.icon className={cn('h-5 w-5 flex-shrink-0', isActive(item.href) && 'text-orange-600')} />
-                  {!sidebarCollapsed && <span className="flex-1">{item.name}</span>}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+        {accountMode === 'business' && renderSection(businessSection)}
+        {accountMode === 'business' && renderSection(driverSection)}
+        {accountMode === 'vendor' && renderSection(vendorSection)}
 
-        {/* Driver Mode Nav */}
-        {accountMode === 'business' && (
-          <div className="mt-6">
-            {!sidebarCollapsed && (
-              <p className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Driver</p>
-            )}
-            <div className="space-y-1">
-              {driverNavigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
-                    isActive(item.href)
-                      ? 'bg-orange-50 text-orange-700'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                  )}
-                >
-                  <item.icon className={cn('h-5 w-5 flex-shrink-0', isActive(item.href) && 'text-orange-600')} />
-                  {!sidebarCollapsed && <span className="flex-1">{item.name}</span>}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+        {renderSection(rewardsSection)}
 
         {/* Urgent Banner */}
         {!sidebarCollapsed && (
-          <div className="mt-6 mx-1">
+          <div className="mt-5 mx-1">
             <Link href="/marketplace?urgent=true" onClick={() => setSidebarOpen(false)}>
-              <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-xl p-4 text-white">
-                <div className="flex items-center gap-2 mb-2">
-                  <Zap className="h-5 w-5 fill-white" />
-                  <span className="font-bold text-sm">Urgent Order</span>
+              <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-xl p-4 text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 transition-shadow">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Zap className="h-4 w-4 fill-white" />
+                  <span className="font-bold text-sm">Need it now?</span>
                 </div>
-                <p className="text-xs text-orange-100">Need something right now? Get it delivered in under 60 minutes.</p>
+                <p className="text-xs text-orange-100">Get urgent delivery in under 60 minutes.</p>
               </div>
             </Link>
           </div>
@@ -223,18 +229,8 @@ export function Sidebar() {
       </div>
 
       {/* Bottom nav */}
-      <div className="border-t border-gray-100 px-3 py-3">
-        {bottomNavigation.map((item) => (
-          <Link
-            key={item.name}
-            href={item.href}
-            onClick={() => setSidebarOpen(false)}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-all duration-200"
-          >
-            <item.icon className="h-5 w-5 flex-shrink-0" />
-            {!sidebarCollapsed && <span>{item.name}</span>}
-          </Link>
-        ))}
+      <div className="border-t border-gray-100 px-3 py-2 space-y-0.5">
+        {bottomNav.map(renderNavItem)}
       </div>
     </div>
   );

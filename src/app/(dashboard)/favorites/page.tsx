@@ -7,17 +7,14 @@ import {
   ShoppingCart,
   Star,
   Zap,
-  Clock,
   Key,
-  Package,
-  Trash2,
-  Grid3X3,
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/ui/empty-state';
-import { cn, formatCurrency, formatETA } from '@/lib/utils';
+import { ProductImage } from '@/components/ui/product-image';
+import { formatCurrency, formatETA } from '@/lib/utils';
 import { mockProducts } from '@/lib/mock-data';
 import { useCartStore } from '@/store';
 
@@ -59,9 +56,13 @@ export default function FavoritesPage() {
           {favorites.map((product) => (
             <Card key={product.id} hover padding="none">
               <div className="relative">
-                <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center rounded-t-xl">
-                  <Package className="h-16 w-16 text-gray-300" />
-                </div>
+                <ProductImage
+                  productId={product.id}
+                  category={product.category}
+                  name={product.name}
+                  size="lg"
+                  className="aspect-[4/3] rounded-t-xl rounded-b-none"
+                />
                 <button
                   onClick={() => removeFavorite(product.id)}
                   className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white shadow-md flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors"

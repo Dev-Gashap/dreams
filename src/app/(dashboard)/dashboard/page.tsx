@@ -24,8 +24,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs } from '@/components/ui/tabs';
 import { Avatar } from '@/components/ui/avatar';
+import { ProductImage } from '@/components/ui/product-image';
 import { cn, formatCurrency, formatRelativeTime, formatStatus, getStatusColor, formatETA } from '@/lib/utils';
-import { mockOrders, mockDispatches, mockDashboardStats, mockApprovals, mockDrivers } from '@/lib/mock-data';
+import { mockOrders, mockDispatches, mockDashboardStats, mockApprovals, mockDrivers, mockProducts } from '@/lib/mock-data';
 import { useAuthStore } from '@/store';
 
 export default function DashboardPage() {
@@ -158,15 +159,21 @@ export default function DashboardPage() {
               </Link>
             </CardHeader>
             <div className="space-y-3">
-              {mockOrders.map((order) => (
+              {mockOrders.map((order) => {
+                const firstProduct = mockProducts.find((p) => p.id === order.items[0]?.product_id);
+                return (
                 <Link
                   key={order.id}
                   href={`/orders?id=${order.id}`}
                   className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
                 >
-                  <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 flex-shrink-0">
-                    <Package className="h-5 w-5" />
-                  </div>
+                  <ProductImage
+                    productId={order.items[0]?.product_id || order.id}
+                    category={firstProduct?.category || 'other'}
+                    name={order.items[0]?.product_name}
+                    size="sm"
+                    className="h-12 w-12 flex-shrink-0 rounded-lg"
+                  />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-gray-900 truncate">{order.items[0]?.product_name}</p>
@@ -187,7 +194,8 @@ export default function DashboardPage() {
                     <p className="text-sm font-semibold text-gray-900 mt-1">{formatCurrency(order.total)}</p>
                   </div>
                 </Link>
-              ))}
+                );
+              })}
             </div>
           </Card>
         </div>

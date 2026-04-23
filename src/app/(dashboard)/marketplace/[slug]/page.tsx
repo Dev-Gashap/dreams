@@ -13,7 +13,6 @@ import {
   Share2,
   Truck,
   Store,
-  Package,
   Check,
   Shield,
   ChevronRight,
@@ -29,6 +28,7 @@ import { Card } from '@/components/ui/card';
 import { Select } from '@/components/ui/select';
 import { Tabs } from '@/components/ui/tabs';
 import { Avatar } from '@/components/ui/avatar';
+import { ProductImage } from '@/components/ui/product-image';
 import { cn, formatCurrency, formatETA, CATEGORY_LABELS } from '@/lib/utils';
 import { mockProducts, mockVendors } from '@/lib/mock-data';
 import { useCartStore } from '@/store';
@@ -75,8 +75,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
       <div className="grid lg:grid-cols-2 gap-10">
         {/* Images */}
         <div>
-          <div className="bg-gradient-to-br from-gray-100 to-gray-50 rounded-2xl aspect-square flex items-center justify-center relative">
-            <Package className="h-32 w-32 text-gray-300" />
+          <div className="relative">
+            <ProductImage
+              productId={product.id}
+              category={product.category}
+              name={product.name}
+              size="full"
+              className="aspect-square rounded-2xl"
+            />
             {product.compare_at_price && (
               <div className="absolute top-4 left-4">
                 <Badge variant="danger" size="lg">
@@ -96,11 +102,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
               <div
                 key={i}
                 className={cn(
-                  'h-20 w-20 rounded-xl border-2 bg-gray-100 flex items-center justify-center cursor-pointer',
-                  i === 1 ? 'border-orange-500' : 'border-gray-200 hover:border-gray-300'
+                  'h-20 w-20 rounded-xl border-2 cursor-pointer overflow-hidden transition-all',
+                  i === 1 ? 'border-orange-500 ring-2 ring-orange-500/20' : 'border-gray-200 hover:border-gray-300'
                 )}
               >
-                <Package className="h-8 w-8 text-gray-300" />
+                <ProductImage
+                  productId={product.id + '-' + i}
+                  category={product.category}
+                  name={product.name}
+                  size="sm"
+                  className="h-full w-full rounded-lg"
+                />
               </div>
             ))}
           </div>
@@ -385,9 +397,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             {relatedProducts.map((p) => (
               <Link key={p.id} href={`/marketplace/${p.slug}`}>
                 <Card hover padding="none">
-                  <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center rounded-t-xl">
-                    <Package className="h-12 w-12 text-gray-300" />
-                  </div>
+                  <ProductImage
+                    productId={p.id}
+                    category={p.category}
+                    name={p.name}
+                    size="lg"
+                    className="aspect-square rounded-t-xl rounded-b-none"
+                  />
                   <div className="p-4">
                     <p className="text-xs text-gray-500">{p.brand}</p>
                     <p className="text-sm font-semibold text-gray-900 line-clamp-2 mt-0.5">{p.name}</p>

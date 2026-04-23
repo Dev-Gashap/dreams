@@ -149,7 +149,7 @@ export default function LandingPage() {
               Rapid Rescue Dispatch Platform
             </div>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-gray-900 tracking-tight leading-[1.1]">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 tracking-tight leading-[1.05]">
               Get Critical Tools
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">
@@ -157,34 +157,47 @@ export default function LandingPage() {
               </span>
             </h1>
 
-            <p className="mt-6 text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="mt-6 text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
               When a missing tool, broken part, or delayed delivery threatens to stop work —
               Dreams finds it, dispatches it, and delivers it faster than anyone else.
             </p>
 
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/register">
-                <Button variant="urgent" size="xl" icon={<ArrowRight className="h-5 w-5" />} iconPosition="right">
+            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+              <Link href="/register" className="w-full sm:w-auto">
+                <Button variant="urgent" size="xl" icon={<ArrowRight className="h-5 w-5" />} iconPosition="right" fullWidth>
                   Start Ordering Now
                 </Button>
               </Link>
-              <Button variant="outline" size="xl" icon={<Play className="h-5 w-5" />}>
+              <Button variant="outline" size="xl" icon={<Play className="h-5 w-5" />} className="w-full sm:w-auto">
                 Watch Demo
               </Button>
             </div>
 
-            <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-8">
+            {/* Trust indicators */}
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-500">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-4 w-4 text-emerald-500" /> No credit card required
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Free forever plan
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Cancel anytime
+              </div>
+            </div>
+
+            <div className="mt-12 sm:mt-16 grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8">
               {stats.map((stat) => (
                 <div key={stat.label}>
-                  <p className="text-3xl font-extrabold text-gray-900">{stat.value}</p>
-                  <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
+                  <p className="text-2xl sm:text-3xl font-extrabold text-gray-900">{stat.value}</p>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1">{stat.label}</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Hero Visual - Dashboard Preview */}
-          <div className="mt-20 relative mx-auto max-w-5xl">
+          <div className="mt-16 sm:mt-20 relative mx-auto max-w-5xl hidden sm:block">
             <div className="bg-gray-900 rounded-2xl shadow-2xl shadow-gray-900/20 p-2 ring-1 ring-gray-800">
               <div className="bg-gray-800 rounded-xl overflow-hidden">
                 <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-700">
@@ -197,8 +210,8 @@ export default function LandingPage() {
                     <div className="px-4 py-1 bg-gray-700 rounded-lg text-xs text-gray-400">app.dreams.io/dashboard</div>
                   </div>
                 </div>
-                <div className="bg-gradient-to-br from-gray-100 to-gray-50 p-8">
-                  <div className="grid grid-cols-4 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-gray-100 to-gray-50 p-4 sm:p-8">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                     {[
                       { label: 'Active Orders', value: '3', color: 'border-l-orange-500' },
                       { label: 'In Transit', value: '1', color: 'border-l-blue-500' },

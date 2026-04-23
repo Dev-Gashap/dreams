@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import {
   X,
@@ -8,15 +7,14 @@ import {
   Package,
   Star,
   Zap,
-  Clock,
-  Check,
   Minus,
   Key,
   ShoppingCart,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { cn, formatCurrency, formatETA } from '@/lib/utils';
+import { ProductImage } from '@/components/ui/product-image';
+import { formatCurrency, formatETA } from '@/lib/utils';
 import { useCartStore } from '@/store';
 import type { Product } from '@/types';
 
@@ -142,9 +140,13 @@ export function CompareDrawer({ products, isOpen, onClose, onRemove }: CompareDr
                       >
                         <X className="h-3 w-3" />
                       </button>
-                      <div className="h-24 bg-gradient-to-br from-gray-100 to-gray-50 rounded-lg flex items-center justify-center mb-2">
-                        <Package className="h-10 w-10 text-gray-300" />
-                      </div>
+                      <ProductImage
+                        productId={product.id}
+                        category={product.category}
+                        name={product.name}
+                        size="md"
+                        className="h-24 rounded-lg mb-2"
+                      />
                       <Link href={`/marketplace/${product.slug}`} className="text-sm font-semibold text-gray-900 hover:text-orange-600 line-clamp-2">
                         {product.name}
                       </Link>

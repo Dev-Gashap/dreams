@@ -14,10 +14,8 @@ import {
   List,
   X,
   Check,
-  ChevronDown,
   Truck,
   Store,
-  Package,
 } from 'lucide-react';
 import { SearchBar } from '@/components/ui/search-bar';
 import { Button } from '@/components/ui/button';
@@ -25,10 +23,11 @@ import { Badge } from '@/components/ui/badge';
 import { Modal } from '@/components/ui/modal';
 import { Select } from '@/components/ui/select';
 import { Tabs } from '@/components/ui/tabs';
+import { ProductImage } from '@/components/ui/product-image';
 import { cn, formatCurrency, formatETA, CATEGORY_LABELS } from '@/lib/utils';
 import { mockProducts } from '@/lib/mock-data';
 import { useCartStore, useSearchStore } from '@/store';
-import type { Product, FulfillmentType, RentalPeriod, ProductCategory } from '@/types';
+import type { Product, FulfillmentType, RentalPeriod } from '@/types';
 
 export default function MarketplacePage() {
   const { query, isUrgent, showFilters, setQuery, setUrgent, toggleFilters, filters, setFilters } = useSearchStore();
@@ -212,10 +211,16 @@ export default function MarketplacePage() {
           >
             {/* Image */}
             <div className={cn(
-              'bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center relative',
+              'relative',
               viewMode === 'grid' ? 'aspect-square' : 'w-48 flex-shrink-0'
             )}>
-              <Package className="h-16 w-16 text-gray-300" />
+              <ProductImage
+                productId={product.id}
+                category={product.category}
+                name={product.name}
+                size={viewMode === 'list' ? 'lg' : 'xl'}
+                className="w-full h-full"
+              />
               {product.compare_at_price && (
                 <div className="absolute top-3 left-3">
                   <Badge variant="danger" size="sm">
@@ -233,11 +238,11 @@ export default function MarketplacePage() {
               <div className="absolute bottom-3 left-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
                   onClick={() => setSelectedProduct(product)}
-                  className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-white/90 backdrop-blur-sm rounded-lg text-sm font-medium text-gray-700 hover:bg-white transition-colors shadow-sm"
+                  className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-white/95 backdrop-blur-sm rounded-lg text-sm font-medium text-gray-700 hover:bg-white transition-colors shadow-md"
                 >
                   <Eye className="h-3.5 w-3.5" /> Quick View
                 </button>
-                <button className="p-2 bg-white/90 backdrop-blur-sm rounded-lg text-gray-400 hover:text-red-500 transition-colors shadow-sm">
+                <button className="p-2 bg-white/95 backdrop-blur-sm rounded-lg text-gray-400 hover:text-red-500 transition-colors shadow-md">
                   <Heart className="h-4 w-4" />
                 </button>
               </div>
@@ -295,10 +300,16 @@ export default function MarketplacePage() {
         >
           <div className="grid md:grid-cols-2 gap-8">
             {/* Product Image */}
-            <div className="bg-gradient-to-br from-gray-100 to-gray-50 rounded-xl aspect-square flex items-center justify-center relative">
-              <Package className="h-24 w-24 text-gray-300" />
+            <div className="relative">
+              <ProductImage
+                productId={selectedProduct.id}
+                category={selectedProduct.category}
+                name={selectedProduct.name}
+                size="full"
+                className="aspect-square rounded-xl"
+              />
               {selectedProduct.is_urgent_eligible && (
-                <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 text-white rounded-full text-sm font-semibold">
+                <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 text-white rounded-full text-sm font-semibold shadow-lg">
                   <Zap className="h-4 w-4 fill-white" /> Urgent Eligible
                 </div>
               )}

@@ -5,31 +5,25 @@ import Link from 'next/link';
 import {
   Package,
   Search,
-  Filter,
-  Eye,
   Truck,
   MapPin,
   Clock,
   CheckCircle2,
-  XCircle,
-  AlertTriangle,
-  ChevronRight,
   RotateCcw,
   Copy,
-  ExternalLink,
   Zap,
   Key,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Modal } from '@/components/ui/modal';
 import { Tabs } from '@/components/ui/tabs';
-import { Avatar } from '@/components/ui/avatar';
 import { EmptyState } from '@/components/ui/empty-state';
-import { cn, formatCurrency, formatDateTime, formatRelativeTime, formatStatus, getStatusColor, getPriorityColor, formatETA } from '@/lib/utils';
-import { mockOrders, mockDispatches } from '@/lib/mock-data';
+import { ProductImage } from '@/components/ui/product-image';
+import { cn, formatCurrency, formatDateTime, formatRelativeTime, formatStatus, getStatusColor, getPriorityColor } from '@/lib/utils';
+import { mockOrders, mockDispatches, mockProducts } from '@/lib/mock-data';
 import type { Order } from '@/types';
 
 export default function OrdersPage() {
@@ -221,23 +215,30 @@ export default function OrdersPage() {
             {/* Items */}
             <div>
               <h4 className="text-sm font-semibold text-gray-900 mb-3">Items</h4>
-              {selectedOrder.items.map((item) => (
+              {selectedOrder.items.map((item) => {
+                const product = mockProducts.find((p) => p.id === item.product_id);
+                return (
                 <div key={item.id} className="flex items-center gap-4 p-3 rounded-xl bg-gray-50 mb-2">
-                  <div className="h-14 w-14 rounded-lg bg-gray-200 flex items-center justify-center">
-                    <Package className="h-6 w-6 text-gray-400" />
-                  </div>
+                  <ProductImage
+                    productId={item.product_id}
+                    category={product?.category || 'other'}
+                    name={item.product_name}
+                    size="md"
+                    className="h-14 w-14 rounded-lg flex-shrink-0"
+                  />
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-gray-900">{item.product_name}</p>
-                    <p className="text-xs text-gray-500">SKU: {item.sku} | Qty: {item.quantity}</p>
+                    <p className="text-xs text-gray-500">SKU: {item.sku} &middot; Qty: {item.quantity}</p>
                     {item.rental_period && (
                       <p className="text-xs text-purple-600 font-medium mt-0.5">
-                        Rental: {item.rental_period} | Deposit: {formatCurrency(item.rental_deposit || 0)}
+                        Rental: {item.rental_period} &middot; Deposit: {formatCurrency(item.rental_deposit || 0)}
                       </p>
                     )}
                   </div>
                   <p className="text-sm font-bold text-gray-900">{formatCurrency(item.total_price)}</p>
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Order Details */}
